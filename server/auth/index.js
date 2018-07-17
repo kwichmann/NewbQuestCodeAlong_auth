@@ -47,7 +47,7 @@ router.post("/signup", (req, res, next) => {
             } else {
                 
                 // Encrypt password
-                bcrypt.hash(req.body.password, 12).then(hashedPassword => {
+                bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
                     
                     // Create new user
                     const newUser = {
@@ -57,6 +57,7 @@ router.post("/signup", (req, res, next) => {
                     
                     // Insert into database
                     users.insert(newUser).then(insertedUser => {
+                        delete insertedUser.password;
                         res.json(insertedUser);
                     });
                 });
