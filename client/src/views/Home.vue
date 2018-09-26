@@ -10,7 +10,12 @@
         Coding along with CJ and Tony from Coding Garden.
       </p>
       <p class="lead">
-        <a class="btn btn-primary btn-lg" href="#" role="button">Sign up</a>
+        <router-link
+          class="btn btn-primary btn-lg"
+          role="button"
+          :to="{name: 'signup'}">
+          Sign up
+        </router-link>
       </p>
     </div>
   </div>
