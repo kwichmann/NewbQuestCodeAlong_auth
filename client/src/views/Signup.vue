@@ -2,10 +2,16 @@
     <section>
         <h1>Signup</h1>
 
-        <form>
+        <div v-if="errorMessage" class="alert alert-warning" role="alert">
+            {{ errorMessage}}
+        </div>
+
+        <form @submit.prevent="signup">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text"
+                <input
+                    v-model="user.username"
+                    type="text"
                     class="form-control"
                     id="username" aria-describedby="usernameHelp"
                     placeholder="Enter username" required>
@@ -18,11 +24,13 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="password">Password</label>
-                    <input type="password"
-                    class="form-control"
-                    id="password"
-                    aria-describedby="passwordHelp"
-                    placeholder="Password" required>
+                    <input
+                        v-model="user.password"
+                        type="password"
+                        class="form-control"
+                        id="password"
+                        aria-describedby="passwordHelp"
+                        placeholder="Password" required>
                     <small id="passwordHelp" class="form-text text-muted">
                         Password must be 10 or more characters long.
                     </small>
@@ -30,7 +38,9 @@
 
                 <div class="form-group col-md-6">
                     <label for="confirmPassword">Confirm password</label>
-                    <input type="password"
+                    <input
+                        v-model="user.confirmPassword"
+                        type="password"
                         class="form-control"
                         id="confirmPassword"
                         aria-describedby="confirmPasswordHelp"
@@ -47,8 +57,55 @@
 </template>
 
 <script>
+import Joi from 'joi';
+
+const schema = Joi.object().keys({
+    username: Joi.string().regex(/(^[a-zA-Z0-9_]*$)/).min(3).max(30).required(),
+    password: Joi.string().min(10).required(),
+    confirmPassword: Joi.string().min(10).required(),
+});
+
 export default {
-    name: "signup",
+    data: () => ({
+        errorMessage: "",
+        user: {
+            username: "",
+            password: "",
+            confirmPassword: ""
+        }
+    }),
+    watch: {
+        user: {
+            handler() {
+                this.errorMessage = "";
+            },
+            deep: true
+        }
+    },
+    methods: {
+        signup() {
+            this.errorMessage = "";
+            if (this.validUser()) {
+                
+            }
+        },
+        validUser() {
+            if (this.user.password !== this.user.confirmPassword) {
+                this.errorMessage = "Passwords must match!"
+                return false;
+            }
+            const result = Joi.validate(this.user, schema);
+            if (result.error === null) {
+                return true;
+            }
+            if (result.error.errorMessage.includes("username")) {
+                this.errorMessage = "Username invalid";
+            } else {
+                this.errorMessage = "Password invalid";
+            }
+            return false;
+        }
+    }
 }
 </script>
 
